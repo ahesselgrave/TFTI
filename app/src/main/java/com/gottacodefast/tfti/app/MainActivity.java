@@ -20,44 +20,17 @@ public class MainActivity extends ActionBarActivity {
 
     MediaPlayer mp;
     TextView tfti, brian;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mp = new MediaPlayer();
-        tfti = (TextView) findViewById(R.id.custom_font);
-        brian = (TextView)findViewById(R.id.custom_font);
+        tfti  = (TextView) findViewById(R.id.custom_font);
+        brian = (TextView) findViewById(R.id.brian_font);
         Typeface font = Typeface.createFromAsset(getAssets(), "justgirlythings.ttf");
         tfti.setTypeface(font);
         brian.setTypeface(font);
-        /*
-        Button b = (Button) findViewById(R.id.button1);
-
-        b.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                if(mp.isPlaying())
-                {
-                    mp.stop();
-                    mp.reset();
-                }
-                try {
-                    AssetFileDescriptor afd;
-                    afd = getAssets().openFd("tfti.mp3");
-                    mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
-                    mp.prepare();
-                    mp.start();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        }); */
 
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -112,8 +85,23 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     protected void onStop() {
         mp.release();
         super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        //Garbage collection happens after onPause, so release mp
+        mp.release();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        //GC deallocated mp, so reallocate as new MediaPlayer
+        mp = new MediaPlayer();
+        super.onResume();
     }
 }
