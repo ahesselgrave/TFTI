@@ -1,5 +1,7 @@
 package com.gottacodefast.tfti.app;
 
+
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
@@ -7,54 +9,59 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.media.MediaPlayer;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
 
-
-
 public class MainActivity extends ActionBarActivity {
 
-    MediaPlayer mp;
     TextView tfti, brian;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mp = new MediaPlayer();
         tfti  = (TextView) findViewById(R.id.custom_font);
         brian = (TextView) findViewById(R.id.brian_font);
         Typeface font = Typeface.createFromAsset(getAssets(), "justgirlythings.ttf");
         tfti.setTypeface(font);
         brian.setTypeface(font);
+    }
 
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.stop();
-                mp.reset();
-            }
-        });
+    @Override
+    protected void onPause() {
+        //Garbage collection happens after onPause, so release mp
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        //GC deallocated mp, so reallocate as new MediaPlayer
+        super.onResume();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        if(mp.isPlaying())
-        {
-            mp.stop();
-            mp.reset();
-        }
         try {
+            MediaPlayer mp = new MediaPlayer();
             AssetFileDescriptor afd;
             afd = getAssets().openFd("tfti.mp3");
             mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
             mp.prepare();
             mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mp.release();
+                }
+            });
         } catch (IllegalStateException err) {
             err.printStackTrace();
             return false;
@@ -80,28 +87,11 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            startActivity(new Intent(getApplicationContext(), Settings.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    protected void onStop() {
-        mp.release();
-        super.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        //Garbage collection happens after onPause, so release mp
-        mp.release();
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        //GC deallocated mp, so reallocate as new MediaPlayer
-        mp = new MediaPlayer();
-        super.onResume();
-    }
 }
+
+
