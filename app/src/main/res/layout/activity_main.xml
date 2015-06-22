@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="tfti"
         android:textColor="#FFCCFF"
-        android:textSize="450px"
+        android:textSize="175sp"
         android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:text="#justbrianthings"
         android:textColor="#FFCCFF"
-        android:textSize="75px"
+        android:textSize="25sp"
         android:id="@+id/brian_font"
         android:layout_alignBottom="@+id/custom_font"
         android:layout_centerHorizontal="true" />

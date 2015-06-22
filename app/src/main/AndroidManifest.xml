@@ -19,10 +19,6 @@
             </intent-filter>
         </activity>
 
-        <!--Settings Activity to be coded-->
-        <activity
-            android:name=".Settings">
-        </activity>
     </application>
 
 </manifest>
